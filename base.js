@@ -1,0 +1,11 @@
+const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const toast=t=>{const el=$('.toast');el.textContent=t;clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.textContent='',3500)};
+const openDialog=id=>{const d=document.getElementById(id);if(d&&!d.open)d.showModal()};
+$$('[data-open]').forEach(b=>b.addEventListener('click',()=>openDialog(b.dataset.open)));
+$$('[data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('dialog').close()));
+$$('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close()}}));
+$('.menu')?.addEventListener('click',()=>{const on=$('.navlinks').classList.toggle('open');$('.menu').setAttribute('aria-expanded',on)});
+$$('.navlinks a').forEach(a=>a.addEventListener('click',()=>{$('.navlinks').classList.remove('open');$('.menu')?.setAttribute('aria-expanded','false')}));
+const download=(name,text)=>{const u=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)};
+const storage={get:(k,f)=>{try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+$$('[data-brief]').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();const d=new FormData(f);download(f.dataset.brief+'.txt',[f.dataset.brief.toUpperCase(),...Array.from(d,([k,v])=>k+': '+v)].join('\n\n'));toast('Your brief is ready to download.');}));
